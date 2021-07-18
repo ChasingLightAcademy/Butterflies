@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +15,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NLog;
 using Progynova.DbModels;
+using Progynova.Models.Request;
+using Progynova.Utilities.Validators;
 
 namespace Progynova
 {
@@ -61,8 +65,11 @@ namespace Progynova
                         NamingStrategy = new CamelCaseNamingStrategy()
                     };
                 })
+                .AddFluentValidation()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
-            
+
+            services.AddTransient<IValidator<UserAuthModel>, UserAuthModelValidator>();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Progynova", Version = "v1" });

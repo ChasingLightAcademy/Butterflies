@@ -1,4 +1,4 @@
-﻿namespace Progynova.DbModels.Enums
+﻿namespace Progynova.Enums
 {
     public enum UserPermission
     {

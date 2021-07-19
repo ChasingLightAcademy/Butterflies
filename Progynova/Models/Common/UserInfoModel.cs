@@ -2,13 +2,15 @@
 
 namespace Progynova.Models.Common
 {
-    public class UserModel
+    public class UserInfoModel
     {
         public string Username { get; set; }
         
         public string Password { get; set; }
         
         public string Email { get; set; }
+        
+        public string Nickname { get; set; }
         
         public string Bio { get; set; }
         

@@ -12,6 +12,8 @@ namespace Progynova.DbModels
         public int Id { get; set; }
         
         [Required]
+        [RegularExpression("/^[a-zA-Z0-9_-]*/")]
+        [MinLength(6)]
         [MaxLength(20)]
         public string Username { get; set; }
         
@@ -21,6 +23,10 @@ namespace Progynova.DbModels
         [Required]
         [EmailAddress]
         public string Email { get; set; }
+        
+        [MinLength(2)]
+        [MaxLength(50)]
+        public string Nickname { get; set; }
         
         [MaxLength(150)]
         public string Bio { get; set; }

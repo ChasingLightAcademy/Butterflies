@@ -1,8 +1,6 @@
-using System;
 using System.IO;
 using System.Threading.Tasks;
-using FluentValidation;
-using FluentValidation.AspNetCore;
+using AspNetCore.ReCaptcha;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -15,8 +13,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NLog;
 using Progynova.DbModels;
-using Progynova.Models.Request;
-using Progynova.Utilities.Validators;
 
 namespace Progynova
 {
@@ -34,7 +30,7 @@ namespace Progynova
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            Log.Info("Loading database.");
+            Log.Info("Choosing raw materials.");
             
             if (string.IsNullOrWhiteSpace(Configuration["Database:Host"]) ||
                 string.IsNullOrWhiteSpace(Configuration["Database:Port"]) || 
@@ -44,17 +40,25 @@ namespace Progynova
             {
                 throw new InvalidDataException($"Cannot find mysql database settings, please check your appsettings.json file.");
             }
+            
             var mysqlConnectionString = $"Server={Configuration["Database:Host"]};" +
                                         $"Port={Configuration["Database:Port"]};" + 
                                         $"Uid={Configuration["Database:User"]};" + 
                                         $"Pwd={Configuration["Database:Pass"]};" + 
                                         $"DataBase={Configuration["Database:Name"]};";
-
             services.AddDbContext<ProgynovaContext>(option =>
             {
                 option.UseLazyLoadingProxies();
                 option.UseMySql(mysqlConnectionString, ServerVersion.AutoDetect(mysqlConnectionString));
             });
+            
+            Log.Info("Compositing.");
+            services.AddReCaptcha(settings =>
+            {
+                // Todo: Waiting for https://github.com/michaelvs97/AspNetCore.ReCaptcha/pull/19.
+            });
+            
+            Log.Info("Diluting.");
             
             services.AddControllers()
                 .AddNewtonsoftJson(json =>
@@ -65,11 +69,10 @@ namespace Progynova
                         NamingStrategy = new CamelCaseNamingStrategy()
                     };
                 })
-                .AddFluentValidation()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
-
-            services.AddTransient<IValidator<UserAuthModel>, UserAuthModelValidator>();
-
+            
+            Log.Info("Tabletting.");
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Progynova", Version = "v1" });
@@ -79,8 +82,8 @@ namespace Progynova
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            Log.Info("C10s tql!");
-            
+            Log.Info("Progynova is ready. C10s fake!");
+
             app.Use(next =>
             {
                 return async context =>

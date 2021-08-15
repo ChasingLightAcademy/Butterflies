@@ -1,20 +1,23 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using AspNetCore.ReCaptcha;
+using Butterflies.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NLog;
-using Progynova.DbModels;
 
-namespace Progynova
+namespace Butterflies
 {
     public class Startup
     {
@@ -46,7 +49,7 @@ namespace Progynova
                                         $"Uid={Configuration["Database:User"]};" + 
                                         $"Pwd={Configuration["Database:Pass"]};" + 
                                         $"DataBase={Configuration["Database:Name"]};";
-            services.AddDbContext<ProgynovaContext>(option =>
+            services.AddDbContext<ButterfliesContext>(option =>
             {
                 option.UseLazyLoadingProxies();
                 option.UseMySql(mysqlConnectionString, ServerVersion.AutoDetect(mysqlConnectionString));
@@ -55,7 +58,10 @@ namespace Progynova
             Log.Info("Compositing.");
             services.AddReCaptcha(settings =>
             {
-                // Todo: Waiting for https://github.com/michaelvs97/AspNetCore.ReCaptcha/pull/19.
+                settings.SiteKey = Configuration["Security:Recaptcha:SiteKey"];
+                settings.SecretKey = Configuration["Security:Recaptcha:SecretKey"];
+                settings.UseRecaptchaNet = true;
+                settings.Version = ReCaptchaVersion.V3;
             });
             
             Log.Info("Diluting.");
@@ -72,59 +78,36 @@ namespace Progynova
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
             
             Log.Info("Tabletting.");
-            
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Progynova", Version = "v1" });
-            });
+
+            services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            Log.Info("Progynova is ready. C10s fake!");
-
-            app.Use(next =>
-            {
-                return async context =>
-                {
-                    context.Response.OnStarting(() =>
-                    {
-                        context.Response.Headers[$"X-{Program.Name}-Author"] = Program.Author;
-                        context.Response.Headers[$"X-{Program.Name}-Version"] = Program.Version.ToString();
-
-                        return Task.CompletedTask;
-                    });
-
-                    Log.Info($"Got {context.Request.Protocol} {context.Request.Method} " +
-                             $"from {context.Connection.RemoteIpAddress?.MapToIPv4()}:{context.Connection.RemotePort} " +
-                             $"to {context.Request.Path} with ID {context.Connection.Id}.");
-
-                    await next(context);
-                };
-            });
-            
             if (env.IsDevelopment())
             {
-                app.UseStaticFiles();
-                app.UseDefaultFiles();
-                
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Progynova v1"));
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
             }
 
-            app.UseForwardedHeaders();
-
-            using var scope = app.ApplicationServices.CreateScope();
-            using var context = scope.ServiceProvider.GetService<ProgynovaContext>();
-            context?.Database.EnsureCreated();
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
 
             app.UseRouting();
 
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

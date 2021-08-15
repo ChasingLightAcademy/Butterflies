@@ -8,18 +8,18 @@ using NLog;
 using NLog.Web;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
-namespace Progynova
+namespace Butterflies
 {
     public class Program
     {
         #region Program Info
 
-        public static readonly string Name = "Progynova";
+        public static readonly string Name = "Butterflies";
         public static readonly string Author = "Qyl";
         public static readonly Version Version = new(1, 0, 0, 0);
 
         #endregion
-
+        
         public static void Main(string[] args)
         {
             var logger = LogManager.GetCurrentClassLogger();

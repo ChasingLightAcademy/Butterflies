@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Progynova", "Progynova\Progynova.csproj", "{6F0CAAC9-6E91-4F8D-8ABD-19B2B4961826}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Butterflies", "Butterflies\Butterflies.csproj", "{9F5EA581-07DB-4E0F-A973-7D70EC15F0D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +12,9 @@ Global
 		{6F0CAAC9-6E91-4F8D-8ABD-19B2B4961826}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F0CAAC9-6E91-4F8D-8ABD-19B2B4961826}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F0CAAC9-6E91-4F8D-8ABD-19B2B4961826}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F5EA581-07DB-4E0F-A973-7D70EC15F0D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F5EA581-07DB-4E0F-A973-7D70EC15F0D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F5EA581-07DB-4E0F-A973-7D70EC15F0D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F5EA581-07DB-4E0F-A973-7D70EC15F0D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

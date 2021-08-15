@@ -1,2 +1,2 @@
-# Progynova-Server
-A course registration system of XLA.
+# Butterflies
+A course manage system for XLA.
